@@ -29,15 +29,15 @@ utilities around enabling this behaviour on various OS.
 
 ```Go
 // listen on the same port. oh yeah.
-l1, _ := reuse.Listen("tcp", "127.0.0.1:1234")
-l2, _ := reuse.Listen("tcp", "127.0.0.1:1234")
+l1, _ := reuse.Listen("lo", "tcp", "127.0.0.1:1234")
+l2, _ := reuse.Listen("lo", "tcp", "127.0.0.1:1234")
 ```
 
 ```Go
 // dial from the same port. oh yeah.
-l1, _ := reuse.Listen("tcp", "127.0.0.1:1234")
-l2, _ := reuse.Listen("tcp", "127.0.0.1:1235")
-c, _ := reuse.Dial("tcp", "127.0.0.1:1234", "127.0.0.1:1235")
+l1, _ := reuse.Listen("lo", "tcp", "127.0.0.1:1234")
+l2, _ := reuse.Listen("lo", "tcp", "127.0.0.1:1235")
+c, _ := reuse.Dial("lo", "tcp", "127.0.0.1:1234", "127.0.0.1:1235")
 ```
 
 **Note: cant dial self because tcp/ip stacks use 4-tuples to identify connections, and doing so would clash.**

@@ -9,9 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var device = "lo"
+
 func testDialFromListeningPort(t *testing.T, network, host string) {
 	lc := net.ListenConfig{
-		Control: Control,
+		Control: GetBindToDeviceControl(device),
 	}
 	ctx := context.Background()
 	ll, err := lc.Listen(ctx, network, host+":0")
@@ -23,7 +25,7 @@ func testDialFromListeningPort(t *testing.T, network, host string) {
 	require.NoError(t, err)
 	d := net.Dialer{
 		LocalAddr: ll.Addr(),
-		Control:   Control,
+		Control:   GetBindToDeviceControl(""),
 	}
 	c, err := d.Dial(network, rl.Addr().String())
 	require.NoError(t, err)
@@ -39,14 +41,14 @@ func TestDialFromListeningPortTcp6(t *testing.T) {
 }
 
 func TestListenPacketWildcardAddress(t *testing.T) {
-	pc, err := ListenPacket("udp", ":0")
+	pc, err := ListenPacket(device, "udp", ":0")
 	require.NoError(t, err)
 	pc.Close()
 }
 
 func TestErrorWhenDialUnresolvable(t *testing.T) {
-	_, err := Dial("asd", "127.0.0.1:1234", "127.0.0.1:1234")
+	_, err := Dial(device, "asd", "127.0.0.1:1234", "127.0.0.1:1234")
 	require.ErrorIs(t, err, net.UnknownNetworkError("asd"))
-	_, err = Dial("tcp", "a.b.c.d:1234", "a.b.c.d:1235")
+	_, err = Dial(device, "tcp", "a.b.c.d:1234", "a.b.c.d:1235")
 	require.Error(t, err)
 }
